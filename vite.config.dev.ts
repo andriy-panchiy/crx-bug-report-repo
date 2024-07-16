@@ -47,8 +47,6 @@ export default defineConfig({
     outDir,
     rollupOptions: {
       input: {
-        content: normalizePath(resolve(__dirname, 'content', 'index.tsx')),
-        background: normalizePath(resolve(__dirname, 'background', 'index.ts')),
         popup: normalizePath(resolve(__dirname, 'popup', 'popup.html')),
         options: normalizePath(resolve(__dirname, 'options', 'options.html')),
         auth_success: normalizePath(resolve(__dirname, 'auth_success.html')),
