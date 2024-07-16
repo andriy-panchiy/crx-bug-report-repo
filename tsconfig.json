@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+    "module": "commonjs",
+    "skipLibCheck": true,
+
+    "paths": {
+      "@/*": ["./*"],
+      "@src/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@content/*": ["./src/app/content/*"],
+      "@pages/*": ["./src/app/pages/*"],
+      "@hooks/*": ["./src/app/hooks/*"],
+      "@models/*": ["./src/app/models/*"],
+      "@css/*": ["./src/app/css/*"],
+      "@data/*": ["./src/app/data/*"],
+      "@enums/*": ["./src/app/enums/*"],
+      "@store/*": ["./src/app/redux/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@api/*": ["./src/app/api/*"],
+      "@public/*": ["./public/*"]
+    },
+
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+
+    "noEmit": true,
+    "allowJs": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "useDefineForClassFields": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "allowSyntheticDefaultImports": true,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true
+  },
+  "include": ["src", "node_modules/@types", "utils/scripts/inboxSDK"]
+}

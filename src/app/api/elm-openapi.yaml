@@ -1,0 +1,5333 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1
+  title: Elm OpenAPI
+
+# by default, every path is secured against a JWT bearer token
+# set individual paths security: field to override the requirement
+security:
+  - bearerAuth: []
+
+paths:
+  /metrics/event:
+    post:
+      security:
+        - maybeAuth: []
+      summary: create metric event
+      operationId: createMetricsEvent
+      tags:
+        - metrics
+      requestBody:
+        description: create event request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEvent"
+      responses:
+        "204":
+          description: event successfully create
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user:
+    get:
+      summary: Get User
+      operationId: getUser
+      tags:
+        - user
+      responses:
+        "200":
+          description: user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      security:
+        - bearerAuthOnboarding: []
+      summary: create elm user
+      operationId: createUser
+      tags:
+        - user
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      requestBody:
+        description: create user request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "200":
+          description: user successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      security:
+        - bearerAuth: []
+      summary: patch elm user
+      operationId: patchUser
+      tags:
+        - user
+      requestBody:
+        description: patch user request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchUserRequest"
+      responses:
+        "200":
+          description: user successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/currentAccount:
+    get:
+      summary: Get Current User
+      operationId: getCurrentUserAccount
+      tags:
+        - user
+      responses:
+        "200":
+          description: get current email user account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseEmailAccount"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/web:
+    post:
+      security:
+        - bearerAuthOnboarding: []
+      summary: create elm web user
+      operationId: createWebUser
+      tags:
+        - user
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      requestBody:
+        description: create web user request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWebUserRequest"
+      responses:
+        "200":
+          description: user successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: patch elm web user
+      operationId: patchWebUser
+      tags:
+        - user
+      requestBody:
+        description: patch web user request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchUserWebRequest"
+      responses:
+        "200":
+          description: user successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/addEmailAccount:
+    post:
+      summary: add a new email account for the user
+      operationId: addEmailAccount
+      tags:
+        - user
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - name: returnUserResponse
+          in: query
+          description: a boolean flag indicating that you would like the user response returned
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        description: add email account request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddEmailAccountRequest"
+      responses:
+        "200":
+          description: email account successfully added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "204":
+          description: account successfully added
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/web/addEmailAccount:
+    post:
+      summary: add a new web email account
+      operationId: addWebEmailAccount
+      tags:
+        - user
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+        - name: returnUserResponse
+          in: query
+          description: a boolean flag indicating that you would like the user response returned
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        description: add email account via web request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddWebEmailAccountRequest"
+      responses:
+        "200":
+          description: email account successfully added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "204":
+          description: account successfully added
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/removeEmailAccount/{emailAccountId}:
+    post:
+      summary: remove the given account from the database
+      operationId: removeEmailAccount
+      tags:
+        - user
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: account successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/removeEmailAccounts:
+    post:
+      summary: remove all email accounts associated with the given user
+      operationId: removeEmailAccounts
+      tags:
+        - user
+      responses:
+        "204":
+          description: accounts successfully deleted
+        default:
+          description: unexpected error. No email accounts will be deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/impact:
+    get:
+      summary: Get User Impact
+      operationId: getUserImpact
+      tags:
+        - user
+      parameters:
+        - name: startDate
+          in: query
+          description: start date for the tree parts graph, which will be adjusted to correspond to the start of the given week, where weeks start on Sunday
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: user impact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserImpact"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/subscriptions:
+    get:
+      summary: get the user's subscriptions. returns the next page to query if it exists
+      operationId: getUserSubscriptions
+      tags:
+        - user
+      parameters:
+        - name: page
+          in: query
+          description: page number, 0 indexed
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: user's email subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/subscriptions/{emailAccountId}:
+    get:
+      summary: get the user's subscriptions for the given email account id only. returns the next page to query if it exists
+      operationId: getUserSubscriptionsForEmailAccount
+      tags:
+        - user
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: page number, 0 indexed
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: user's email subscriptions for the given account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/subscription/{id}:
+    delete:
+      summary: delete all the emails that are part of the given subscription id
+      operationId: deleteSubscription
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          description: subscription id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: unsubscribe
+          in: query
+          description: a boolean flag indicating if the user should also be unsubscribed from the subscription
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: success rate of deleting the messages for this subscription
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_rate:
+                    type: number
+                    format: float
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: mark this subscription id as kept
+      operationId: keepSubscription
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          description: subscription id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: subscription deleted successfully
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: returns emails deleted, total number of emails, and deletion status of the susbcription
+      operationId: getSubscriptionStatus
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          description: subscription id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionStatus"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/subscription/{id}/restore:
+    post:
+      summary: restores the deleted subscription specified by the given ID
+      operationId: restoreSubscription
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          description: subscription id to restore
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: subscribe
+          in: query
+          description: a boolean flag indicating if the user should also be subscribed to the subscription
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "204":
+          description: subscription was successfully restored
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/userTreesAndPlantingProjects:
+    get:
+      security: []
+      summary: Get the number of trees planted by current user
+      operationId: userTreesAndPlantingProjects
+      tags:
+        - user
+      responses:
+        "200":
+          description: userTreesAndPlantingProjects Response swagger object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserTreesAndPlantingProjectsResponse"
+
+  /jwt/user/trees/{treeId}:
+    patch:
+      summary: update the tree with the given id
+      operationId: updateTree
+      tags:
+        - user
+      parameters:
+        - name: treeId
+          in: path
+          description: tree id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: update tree request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTreeRequest"
+      responses:
+        "204":
+          description: tree was successfully updated
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/settings:
+    get:
+      summary: Get email settings
+      operationId: getEmailSettings
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: email settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSettingsResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: set or update email settings
+      operationId: updateEmailSettings
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: update email settings request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmailSettingsRequest"
+      responses:
+        "204":
+          description: email settings successfully updated
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/numberUnread:
+    get:
+      summary: Get number of unread emails across all accounts
+      operationId: getNumberOfUnreadEmails
+      tags:
+        - email
+      responses:
+        "200":
+          description: number of unread emails
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - numberUnread
+                properties:
+                  numberUnread:
+                    type: integer
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/unreadCount:
+    get:
+      summary: Get number of unread emails and unread threads
+      operationId: GetUnreadCount
+      tags:
+        - email
+      responses:
+        "200":
+          description: number of unread emails and unread threads
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - unreadEmails
+                  - unreadThreads
+                properties:
+                  unreadEmails:
+                    type: integer
+                  unreadThreads:
+                    type: integer
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /stats/impact:
+    get:
+      security: []
+      summary: Get impact stats for the wildhero community
+      operationId: getImpactStats
+      tags:
+        - stats
+      responses:
+        "200":
+          description: ImpactStatsResponse swagger object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImpactStatsResponse"
+
+  /public/platformInboxZeroImage:
+    get:
+      summary: get random image of the day
+      operationId: platformInboxZeroImage
+      security: []
+      tags:
+        - public
+      parameters:
+        - name: platform
+          in: query
+          description: desktop or mobile
+          required: true
+          schema:
+            type: string
+            enum:
+              - desktop
+              - mobile
+      responses:
+        "200":
+          description: inbox zero background image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image:
+                    x-go-type-skip-optional-pointer: true
+                    type: string
+
+  /public/plantingPartners:
+    get:
+      summary: get planting partners
+      operationId: getPlantingPartners
+      security: []
+      tags:
+        - impact
+      parameters:
+        - name: userId
+          in: query
+          description: userId
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: planting partners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlantingPartner"
+
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/user/settings:
+    get:
+      summary: Get user settings
+      operationId: getUserSettings
+      tags:
+        - user
+      responses:
+        "200":
+          description: user settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettingsResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: set or update user settings
+      operationId: updateUserSettings
+      tags:
+        - user
+      requestBody:
+        description: update user settings request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSettingsRequest"
+      responses:
+        "204":
+          description: settings successfully updated
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /featureFlags:
+    get:
+      security: []
+      summary: Get feature flags
+      operationId: getFeatureFlags
+      tags:
+        - featureFlags
+      responses:
+        "200":
+          description: featureFlags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureFlag"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /featureFlags/{featureFlagName}:
+    get:
+      security: []
+      summary: Get specific flag
+      operationId: getSpecificFeatureFlag
+      tags:
+        - featureFlags
+      parameters:
+        - name: featureFlagName
+          in: path
+          description: feature flag name
+          required: true
+          schema:
+            $ref: "#/components/schemas/FeatureFlagName"
+      responses:
+        "200":
+          description: featureFlag
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlag"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /stats/treesPlanted:
+    get:
+      security: []
+      summary: Get the number of trees planted by all users
+      operationId: getTreesPlanted
+      tags:
+        - stats
+      responses:
+        "200":
+          description: GlobalTreesPlantedResponse swagger object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreesPlantedResponse"
+
+  /public/plantingProjects/{plantingProjectId}/images:
+    get:
+      summary: get all images for the given planting projects
+      operationId: getImagesForPlantingProject
+      security: []
+      tags:
+        - impact
+      parameters:
+        - name: plantingProjectId
+          in: path
+          description: plantingProjectId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: pageToken
+          in: query
+          description: page token
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: images of the given planting partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImagesAndPagination"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /public/plantingProjects/{plantingProjectId}/fieldReport:
+    get:
+      summary: get latest field report
+      operationId: getFieldReport
+      security: []
+      tags:
+        - impact
+      parameters:
+        - name: plantingProjectId
+          in: path
+          description: plantingProjectId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: latest report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Evidence"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /public/plantingPartners/images:
+    get:
+      summary: get all planting project images
+      operationId: getAllPlantingImages
+      security: []
+      tags:
+        - impact
+      parameters:
+        - name: pageToken
+          in: query
+          description: page token
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: images of all planting partners
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImagesAndPagination"
+
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/labels:
+    post:
+      summary: create a label.
+      operationId: labelCreate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: label request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailLabel"
+      responses:
+        "200":
+          description: an instance of EmailLabel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLabel"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: Gets all labels.
+      operationId: labelsList
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: an instance of EmailLabelListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLabelListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/labels/{labelId}:
+    get:
+      summary: Gets the specified label.
+      operationId: labelGet
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: labelId
+          in: path
+          description: label id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLabel"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Deletes the specified label.
+      operationId: labelDelete
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: labelId
+          in: path
+          description: label id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: label successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: updates the specified label.
+      operationId: labelUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: labelId
+          in: path
+          description: label id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: label update request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailLabel"
+      responses:
+        "200":
+          description: an instance of EmailLabel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLabel"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/{messageId}:
+    get:
+      summary: Gets the specified message.
+      operationId: messageGet
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+        - name: thumbnails
+          in: query
+          description: include attachment thumbnails
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Deletes the specified message.
+      operationId: messageDelete
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: email successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: updates the specified message.
+      operationId: messageUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: message update request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageUpdateRequest"
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/emptyTrash:
+    post:
+      summary: delete the items in the trash
+      operationId: emptyTrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: the trash was emptied
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/{messageId}/trash:
+    post:
+      summary: trashes the specified message.
+      operationId: messageTrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/{messageId}/untrash:
+    post:
+      summary: un-trashes the specified message.
+      operationId: messageUntrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/bulkTrash:
+    post:
+      summary: trashes the specified message.
+      operationId: messagesTrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageBulkIdRequest"
+      responses:
+        "204":
+          description: success
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/bulkUntrash:
+    post:
+      summary: un-trashes the specified message.
+      operationId: messagesUntrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageBulkIdRequest"
+      responses:
+        "204":
+          description: success
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/bulkDelete:
+    post:
+      summary: deletes the specified messages.
+      operationId: messagesDelete
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageBulkIdRequest"
+      responses:
+        "204":
+          description: success
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/bulkUpdate:
+    post:
+      summary: updates the specified messages.
+      operationId: messagesUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageBulkUpdateRequest"
+      responses:
+        "204":
+          description: success
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/offlineChanges:
+    post:
+      summary: publishes app-side changes made while the user was offline
+      operationId: submitOfflineChanges
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitOfflineChangesRequest"
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - offlineChangesId
+                properties:
+                  offlineChangesId:
+                    type: string
+                    format: uuid
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/offlineChanges/{offlineChangesId}:
+    get:
+      summary: check the status of changes previously submitted
+      operationId: getOfflineChangesStatus
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: offlineChangesId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetOfflineChangesStatusResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages:
+    get:
+      summary: Gets the message list.
+      operationId: messagesList
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailMessageListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/sync:
+    get:
+      summary: Returns a list messages of messages for syncing. It requires either lastSyncTimestamp or fromTimestamp and toTimestamp.
+      operationId: messagesListByTimestamp
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: lastSyncTimestamp
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: fromTimestamp
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toTimestamp
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailMessageListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/sync:
+    get:
+      summary: Returns a list of threads for syncing
+      operationId: threadsSync
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+        - name: afterTimestamp
+          required: false
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: beforeTimestamp
+          required: true
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: an instance of EmailThreadsListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThreadsListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/threads:
+    get:
+      summary: Gets the threads list for all account.
+      operationId: threadsListForAllAccounts
+      tags:
+        - email
+      parameters:
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailThreadsListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThreadsListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/messages:
+    get:
+      summary: Gets the message list for all accounts.
+      operationId: messagesListForAllAccounts
+      tags:
+        - email
+      parameters:
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+        - name: pageToken
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailMessageListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/{messageId}/attachments/{attachmentId}:
+    get:
+      summary: Gets the specified message attachment.
+      operationId: messageGetAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: attachmentId
+          in: path
+          description: attachment id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailMessagePartBody
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessagePartBody"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/{messageId}/attachments/download:
+    get:
+      summary: Gets the specified message attachment file(s).
+      operationId: messageDownloadAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: attachmentId
+          in: query
+          description: attachment id
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: file(s) attachment
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/messages/send/attachment:
+    post:
+      summary: send a message with attachment.
+      operationId: messageSendAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadType
+          in: query
+          description: upload type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EmailUploadType"
+      requestBody:
+        content:
+          multipart/mixed:
+            schema:
+              type: object
+              properties:
+                emailMessage:
+                  $ref: "#/components/schemas/EmailMessage"
+                data:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/history:
+    get:
+      summary: Gets the history list.
+      operationId: historyList
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: startHistoryId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: historyTypes
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EmailHistoryType"
+        - name: labelId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailHistoryListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailHistoryListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/{draftMessageId}:
+    get:
+      summary: Gets the specified draft.
+      operationId: draftGet
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: draftMessageId
+          in: path
+          description: draft email message id
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailDraftMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Deletes the specified draft message.
+      operationId: draftDelete
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: draftMessageId
+          in: path
+          description: draft message id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: draft successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: updates the specified draft message.
+      operationId: draftUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: draftMessageId
+          in: path
+          description: draft message id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: message update request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailDraftMessage"
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts:
+    post:
+      summary: create a draft.
+      operationId: draftCreate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: draft request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailDraftMessage"
+      responses:
+        "200":
+          description: an instance of EmailDraftMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: Gets the draft message list.
+      operationId: draftsList
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailDraftMessageListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessageListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/attachment:
+    post:
+      summary: upload a draft attachment.
+      operationId: draftCreateAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadType
+          in: query
+          description: upload type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EmailUploadType"
+      requestBody:
+        content:
+          multipart/mixed:
+            schema:
+              type: object
+              properties:
+                emailMessage:
+                  $ref: "#/components/schemas/EmailMessage"
+                data:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: an instance of EmailDraftMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/{draftMessageId}/attachment:
+    put:
+      summary: update a draft with an attachment.
+      operationId: draftUpdateAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadType
+          in: query
+          description: upload type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EmailUploadType"
+        - name: draftMessageId
+          in: path
+          description: draft message id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/mixed:
+            schema:
+              type: object
+              properties:
+                emailMessage:
+                  $ref: "#/components/schemas/EmailMessage"
+                data:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: an instance of EmailDraftMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraftMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/send/attachment:
+    post:
+      summary: send a draft with attachment.
+      operationId: draftSendAttachment
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadType
+          in: query
+          description: upload type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EmailUploadType"
+      requestBody:
+        content:
+          multipart/mixed:
+            schema:
+              type: object
+              properties:
+                emailMessage:
+                  $ref: "#/components/schemas/EmailMessage"
+                data:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/send:
+    post:
+      summary: sends the specified draft message.
+      operationId: draftSend
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: draft request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailDraftMessage"
+      responses:
+        "200":
+          description: an instance of EmailMessage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/{draftMessageId}/attachment/add:
+    post:
+      summary: starts the process of uploading a chunked attachment to a draft
+      operationId: startChunkedAttachmentUpload
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: draftMessageId
+          in: path
+          description: draft message id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  description: the name of the file being uploaded
+                mimeType:
+                  type: string
+                  description: the MIME type of the file being uploaded
+              required:
+                - fileName
+                - mimeType
+      responses:
+        "200":
+          description: unique key for the upload session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploadKey:
+                    type: string
+                    description: unique key for the upload session
+                required:
+                  - uploadKey
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/drafts/attachment/upload:
+    get:
+      summary: retrieves the content range that has already been uploaded
+      operationId: getAttachmentUpload
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadKey
+          in: query
+          description: unique key for the upload session
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: content range that has been uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  range:
+                    type: string
+                    description: indicates the bytes range that has been uploaded
+                required:
+                  - range
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: uploads a chunk of attachment data
+      operationId: uploadAttachmentChunk
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: uploadKey
+          in: query
+          description: unique key for the upload session
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Content-Range
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: chunk of data to be uploaded
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "204":
+          description: success
+
+  /jwt/email/{emailAccountId}/threads:
+    get:
+      summary: Gets the threads list.
+      operationId: threadsList
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailThreadsListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThreadsListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/{threadId}:
+    get:
+      summary: Gets the specified thread.
+      operationId: threadGet
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: threadId
+          in: path
+          description: email thread id
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: thread format
+          required: false
+          schema:
+            $ref: "#/components/schemas/ThreadFormat"
+      responses:
+        "200":
+          description: an instance of EmailThread
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThread"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Deletes the specified thread.
+      operationId: threadDelete
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: threadId
+          in: path
+          description: thread id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: thread successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: updates the specified thread.
+      operationId: threadUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: threadId
+          in: path
+          description: thread id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: message update request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageUpdateRequest"
+      responses:
+        "200":
+          description: an instance of EmailThread
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThread"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/{threadId}/trash:
+    post:
+      summary: trashes the specified thread.
+      operationId: threadTrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: threadId
+          in: path
+          description: thread id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailThread
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThread"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/{threadId}/untrash:
+    post:
+      summary: un-trashes the specified thread.
+      operationId: threadUntrash
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: threadId
+          in: path
+          description: thread id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an instance of EmailThread
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThread"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/bulkUpdate:
+    post:
+      summary: updates the specified threads.
+      operationId: threadsUpdate
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: message request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageBulkUpdateRequest"
+      responses:
+        "204":
+          description: success
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/threads/updateAll:
+    post:
+      summary: adds and removes labels from subset of emails
+      operationId: threadsUpdateAll
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          x-go-type-skip-optional-pointer: true
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        description: message update request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageUpdateRequest"
+      responses:
+        "204":
+          description: Successful response with no content
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/searchThreads:
+    get:
+      summary: returns threads and contacts matching the search term
+      operationId: searchThreadsAndContacts
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          x-go-type-skip-optional-pointer: true
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+          x-go-type-skip-optional-pointer: true
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+          x-go-type-skip-optional-pointer: true
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+          x-go-type-skip-optional-pointer: true
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          x-go-type-skip-optional-pointer: true
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+          x-go-type-skip-optional-pointer: true
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+          x-go-type-skip-optional-pointer: true
+      responses:
+        "200":
+          description: search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSearchThreadsListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/search:
+    get:
+      summary: returns emails and contacts matching the search term
+      operationId: searchMessagesAndContacts
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSearchResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/labelSearch:
+    get:
+      summary: returns email labels matching the search term
+      operationId: labelSearch
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelSearchResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/contacts/{emailAccountId}/search:
+    get:
+      summary: returns contacts matching the search term
+      operationId: contactsSearch
+      tags:
+        - contacts
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: contact person
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSearchResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/contacts/{emailAccountId}/suggested:
+    get:
+      summary: returns contacts matching the search term
+      operationId: contactsSearchSuggested
+      tags:
+        - contacts
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: contact person
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSearchResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/unsubscribe/{messageId}:
+    get:
+      summary: Gets the specified message.
+      operationId: emailUnsubscribe
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: unsubscribeOption
+          in: query
+          description: unsubscribe option
+          required: true
+          schema:
+            $ref: "#/components/schemas/EmailUnsubscribeOption"
+      responses:
+        "204":
+          description: email successfully unsubscribed
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/calendar-event/{messageId}:
+    get:
+      summary: respond to calendar event
+      operationId: calendarEventRespond
+      tags:
+        - email
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: responseStatus
+          in: query
+          description: response status
+          required: true
+          schema:
+            $ref: "#/components/schemas/CalendarEventResponseStatus"
+      responses:
+        "204":
+          description: calendar event updated
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/tools/{messageId}/forwardOriginal:
+    get:
+      summary: forward original message
+      operationId: forwardOriginalMessage
+      tags:
+        - devtools
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: messageId
+          in: path
+          description: email message id
+          required: true
+          schema:
+            type: string
+        - name: recipient
+          in: query
+          description: where to forward the message
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: message successfully forwarded
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/tools/uploadEml:
+    post:
+      summary: upload EML message
+      operationId: uploadEml
+      tags:
+        - devtools
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: eml file
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "204":
+          description: message successfully inserted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/email/{emailAccountId}/tools/generateSubscriptions:
+    get:
+      summary: generates subscriptions
+      operationId: generateSubscriptions
+      tags:
+        - devtools
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: amount
+          in: query
+          description: amount to generate
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /device/preAuthAbGroups:
+    get:
+      security: []
+      summary: Get pre authentication ab testing groups
+      operationId: preAuthAbGroups
+      tags:
+        - device
+      parameters:
+        - in: header
+          name: X-Device-Unique-Id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: pre auth ab testing groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreAuthAbGroupsResponse"
+
+  /jwt/playground/{emailAccountId}/imapThreadsList:
+    get:
+      summary: IMAP threads list.
+      operationId: threadsListIMAP
+      tags:
+        - playground
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: maxResults
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageToken
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: string
+        - name: labelIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includeTrash
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: format
+          in: query
+          description: message format
+          required: false
+          schema:
+            $ref: "#/components/schemas/EmailMessageFormat"
+      responses:
+        "200":
+          description: an instance of EmailThreadsListResponse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailThreadsListResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /jwt/playground/{emailAccountId}/imapLoadInbox:
+    get:
+      summary: IMAP load inbox.
+      operationId: loadInboxIMAP
+      tags:
+        - playground
+      parameters:
+        - name: emailAccountId
+          in: path
+          description: email account id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: event successfully create
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuthOnboarding:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    maybeAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    CreateUserRequest:
+      type: object
+      required:
+        - serverAuthCode
+      properties:
+        idToken:
+          type: string
+        serverAuthCode:
+          type: string
+        appVersion:
+          type: string
+        deviceTokens:
+          type: array
+          items:
+            type: string
+
+    CreateWebUserRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    PatchUserRequest:
+      type: object
+      properties:
+        appVersion:
+          type: string
+        deviceTokens:
+          type: array
+          items:
+            type: string
+        preferredContentSizeCategory:
+          type: string
+
+    PatchUserWebRequest:
+      type: object
+      properties:
+        deviceTokens:
+          type: array
+          items:
+            type: string
+
+    AddEmailAccountRequest:
+      type: object
+      required:
+        - idToken
+        - serverAuthCode
+      properties:
+        idToken:
+          type: string
+        serverAuthCode:
+          type: string
+
+    AddWebEmailAccountRequest:
+      type: object
+      required:
+        - refreshToken
+        - idToken
+      properties:
+        refreshToken:
+          type: string
+        idToken:
+          type: string
+
+    UserImpactCarbon:
+      type: object
+      required:
+        - removed
+      properties:
+        removed:
+          type: number
+          format: float
+
+    UserImpactTrees:
+      type: object
+      properties:
+        planted:
+          $ref: "#/components/schemas/UserImpactTreesPlanted"
+        progress:
+          $ref: "#/components/schemas/UserImpactTreesProgress"
+        week:
+          $ref: "#/components/schemas/UserImpactTreesPlantedThisWeek"
+
+    UserImpactTreesPlantedThisWeek:
+      type: object
+      required:
+        - sunday
+        - monday
+        - tuesday
+        - wednesday
+        - thursday
+        - friday
+        - saturday
+      properties:
+        sunday:
+          type: number
+          format: double
+        monday:
+          type: number
+          format: double
+        tuesday:
+          type: number
+          format: double
+        wednesday:
+          type: number
+          format: double
+        thursday:
+          type: number
+          format: double
+        friday:
+          type: number
+          format: double
+        saturday:
+          type: number
+          format: double
+
+    UserImpactTreesProgress:
+      type: object
+      required:
+        - current
+        - needed
+      properties:
+        current:
+          type: integer
+        needed:
+          type: integer
+
+    UserImpactTreesPlanted:
+      type: object
+      required:
+        - integer
+        - decimal
+        - displayAmount
+      properties:
+        integer:
+          type: integer
+        decimal:
+          type: number
+        displayAmount:
+          type: string
+
+    UserImpact:
+      type: object
+      required:
+        - carbon
+        - trees
+      properties:
+        carbon:
+          $ref: "#/components/schemas/UserImpactCarbon"
+        trees:
+          $ref: "#/components/schemas/UserImpactTrees"
+
+    GenericEventPayload:
+      type: object
+      additionalProperties: {}
+
+    AmountEventPayload:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: integer
+      additionalProperties: {}
+
+    EventType:
+      type: string
+      enum:
+        - app_analytics
+        - web_analytics
+        - elm_event
+        - extension_analytics
+
+    EventName:
+      type: string
+      anyOf:
+        - $ref: "#/components/schemas/UserEventName"
+        - $ref: "#/components/schemas/AppAnalyticsEventName"
+        - type: string
+
+    AppAnalyticsEventName:
+      type: string
+      enum:
+        - email_rendered_event
+        - inbox_updated_event
+        - attachment_opened_event
+        - account_switched_event
+
+    UserEventName:
+      type: string
+      enum:
+        - app_open_event
+        - page_open_event
+        - email_client_setup_event
+        - onboarding_email_sent_event
+        - first_real_email_sent_event
+        - first_cleanup_event
+        - cleanup_event
+        - email_opened_event
+        - email_received_event
+        - email_sent_event
+        - email_delete_event
+        - email_starred_event
+        - screen_loaded_event
+        - click_event
+        - failed_token_refresh
+
+    CreateEvent:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          $ref: "#/components/schemas/EventName"
+        type:
+          $ref: "#/components/schemas/EventType"
+        value:
+          type: string
+        payload:
+          anyOf:
+            - $ref: "#/components/schemas/AmountEventPayload"
+            - $ref: "#/components/schemas/GenericEventPayload"
+
+    Subscription:
+      type: object
+      required:
+        - id
+        - email_account_id
+        - sender_name
+        - sender_email
+        - open_rate
+        - num_emails
+        - carbon_removed
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            name: uuid
+            path: github.com/google/uuid
+        email_account_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            name: uuid
+            path: github.com/google/uuid
+        sender_name:
+          type: string
+        sender_email:
+          type: string
+          format: email
+        open_rate:
+          type: number
+          format: float
+        num_emails:
+          type: integer
+        carbon_removed:
+          type: number
+          format: float
+        kept:
+          type: boolean
+
+    SubscriptionResponse:
+      type: object
+      required:
+        - subscriptions
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subscription"
+        loading_status:
+          $ref: "#/components/schemas/LoadingState"
+        next_page:
+          type: integer
+          format: int
+
+    LoadingState:
+      type: object
+      required:
+        - synced_count
+        - synced_left
+        - time_seconds_left
+        - completed
+      properties:
+        synced_count:
+          type: integer
+        synced_left:
+          type: integer
+        time_seconds_left:
+          type: integer
+        completed:
+          type: boolean
+
+    SubscriptionStatus:
+      type: object
+      required:
+        - emailsDeleted
+        - totalEmails
+        - deletionComplete
+      properties:
+        emailsDeleted:
+          type: integer
+        totalEmails:
+          type: integer
+        deletionComplete:
+          type: boolean
+
+    UserTreesAndPlantingProjectsResponse:
+      type: object
+      required:
+        - trees
+        - plantingProjects
+      properties:
+        trees:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantedTree"
+        plantingProjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingProject"
+
+    TreesPlantedResponse:
+      required:
+        - count
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+
+    ImpactStatsResponse:
+      required:
+        - carbonSequesteredPounds
+        - countriesSupportedCount
+        - countryPartnersCount
+        - protectedAcres
+        - treePlantersSupportedCount
+        - treesPlantedCount
+      type: object
+      properties:
+        carbonSequesteredPounds:
+          type: integer
+          format: int64
+        countriesSupportedCount:
+          type: integer
+          format: int64
+        countryPartnersCount:
+          type: integer
+          format: int64
+        protectedAcres:
+          type: number
+          format: double
+        treePlantersSupportedCount:
+          type: integer
+          format: int64
+        treesPlantedCount:
+          type: integer
+          format: int64
+
+    Coordinates:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+
+    PlantingImage:
+      type: object
+      required:
+        - coordinates
+        - title
+        - updated_at
+        - url
+      properties:
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        title:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        url:
+          type: string
+
+    PlantedTree:
+      type: object
+      required:
+        - id
+        - friendlyID
+        - treeType
+        - plantedBy
+        - currentStatus
+        - statusChangeTimeline
+        - satelliteImage
+        - plantingProjectId
+        - isCelebrated
+        - rarity
+        - percentageOwned
+      properties:
+        id:
+          type: string
+          format: uuid
+        friendlyID:
+          type: string
+        treeType:
+          type: string
+        plantedBy:
+          type: string
+        currentStatus:
+          type: string
+        statusChangeTimeline:
+          $ref: "#/components/schemas/statusChangeTimeline"
+        satelliteImage:
+          type: string
+        plantingProjectId:
+          type: string
+          format: uuid
+        isCelebrated:
+          type: boolean
+        rarity:
+          $ref: "#/components/schemas/TreeRarity"
+        splitInitials:
+          type: array
+          items:
+            type: string
+        percentageOwned:
+          type: number
+          format: double
+
+    TreeRarity:
+      type: string
+      enum:
+        - normal
+        - special
+
+    statusChangeTimeline:
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+        planted:
+          type: string
+          format: date-time
+        verified:
+          type: string
+          format: date-time
+        photo:
+          type: string
+          format: date-time
+
+    PlantingProject:
+      type: object
+      required:
+        - coordinates
+        - country
+        - geofence
+        - id
+        - region
+        - site
+        - treesPlanted
+        - order
+      properties:
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        country:
+          type: string
+        geofence:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+                  format: double
+        id:
+          type: string
+          format: uuid
+        region:
+          type: string
+        site:
+          type: string
+        treesPlanted:
+          type: number
+          format: double
+        organization:
+          type: string
+          x-go-type-skip-optional-pointer: true
+        profileImageUrl:
+          type: string
+        backgroundImageUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingProjectTags"
+        animalsProtected:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingProjectAnimalsProtected"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingProjectMedia"
+        latestVideo:
+          $ref: "#/components/schemas/PlantingProjectMedia"
+        order:
+          type: integer
+
+    PlantingProjectTags:
+      type: string
+      enum:
+        - biodiversity
+        - food
+        - clean water
+        - livelihood
+
+    PlantingProjectAnimalsProtected:
+      type: object
+      required:
+        - image
+        - name
+        - status
+      properties:
+        image:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+
+    PlantingProjectMedia:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - source
+        - url
+        - thumbnail
+        - takenAt
+        - updatedAt
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/PlantingProjectMediaType"
+        url:
+          type: string
+        title:
+          type: string
+        source:
+          type: string
+        thumbnail:
+          type: string
+        previewUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingProjectMediaTags"
+        description:
+          type: string
+        takenAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PlantingProjectMediaType:
+      type: string
+      enum:
+        - image
+        - video
+
+    PlantingProjectMediaTags:
+      type: string
+      enum:
+        - planting_activity
+        - animal_sighting
+        - timelapse
+        - sunset
+        - sunrise
+
+    ImpactPlantingProject:
+      allOf:
+        - $ref: "#/components/schemas/PlantingProject"
+        - type: object
+          required:
+            - images
+            - userTreesPlanted
+            - planters
+            - plantingLead
+            - verificationLevel
+          properties:
+            images:
+              type: array
+              items:
+                $ref: "#/components/schemas/PlantingImage"
+            userTreesPlanted:
+              type: number
+              format: double
+            planters:
+              type: integer
+              format: int64
+            plantingLead:
+              type: string
+            verificationLevel:
+              type: integer
+              format: int64
+            lastSession:
+              type: string
+              format: date-time
+
+    PlantingPartner:
+      type: object
+      required:
+        - id
+        - partnerLogo
+        - partnerName
+        - plantingProjects
+      properties:
+        id:
+          type: string
+          format: uuid
+        partnerLogo:
+          type: string
+        partnerName:
+          type: string
+        plantingProjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImpactPlantingProject"
+        co2Reduction:
+          type: number
+          format: double
+        areaPlanted:
+          type: number
+          format: double
+        totalEmployees:
+          type: integer
+
+    Evidence:
+      type: object
+      required:
+        - dateOfFieldReport
+        - typeOfSession
+        - images
+      properties:
+        dateOfFieldReport:
+          type: string
+        typeOfSession:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+
+    ImagesAndPagination:
+      type: object
+      required:
+        - images
+        - hasNext
+        - nextPageToken
+      properties:
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlantingImage"
+        hasNext:
+          type: boolean
+        nextPageToken:
+          type: string
+
+    UpdateTreeRequest:
+      type: object
+      required:
+        - isCelebrated
+      properties:
+        isCelebrated:
+          type: boolean
+          description: mark the tree as celebrated (true)
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - primaryEmail
+        - emailAccounts
+        - abTestingGroups
+        - settings
+        - activeEmailAccount
+      properties:
+        id:
+          type: string
+          format: uuid
+        primaryEmail:
+          type: string
+        emailAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponseEmailAccount"
+        abTestingGroups:
+          type: array
+          items:
+            type: string
+        settings:
+          $ref: "#/components/schemas/UserSettingsResponse"
+        activeEmailAccount:
+          $ref: "#/components/schemas/UserResponseEmailAccount"
+
+    UserResponseEmailAccount:
+      type: object
+      required:
+        - id
+        - emailAddress
+        - displayName
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        emailAddress:
+          type: string
+        displayName:
+          type: string
+        profilePicture:
+          type: string
+        status:
+          $ref: "#/components/schemas/UserResponseEmailAccountStatus"
+
+    UserResponseEmailAccountStatus:
+      type: string
+      enum:
+        - unknown
+        - authenticated
+        - invalid
+        - deleted
+
+    UserSettingsResponse:
+      type: object
+      required:
+        - swipe_actions
+        - notifications
+        - web_notifications
+        - web_appearance
+        - app_appearance
+        - web_theme
+        - app_theme
+      properties:
+        swipe_actions:
+          $ref: "#/components/schemas/UserSettingSwipeAction"
+        web_appearance:
+          $ref: "#/components/schemas/UserSettingAppearance"
+        app_appearance:
+          $ref: "#/components/schemas/UserSettingAppearance"
+        web_theme:
+          $ref: "#/components/schemas/UserSettingTheme"
+        app_theme:
+          $ref: "#/components/schemas/UserSettingTheme"
+
+    UserSettingAppearance:
+      type: object
+      required:
+        - appearance
+      properties:
+        appearance:
+          $ref: "#/components/schemas/UserSettingAppearanceValue"
+
+    UserSettingTheme:
+      type: object
+      required:
+        - theme
+      properties:
+        theme:
+          $ref: "#/components/schemas/UserSettingThemeValue"
+
+    UserSettingSwipeAction:
+      type: object
+      required:
+        - left
+        - right
+      properties:
+        left:
+          $ref: "#/components/schemas/UserSettingSwipeActionValue"
+        right:
+          $ref: "#/components/schemas/UserSettingSwipeActionValue"
+
+    UserSettingSwipeActionValue:
+      type: string
+
+    UserSettingAppearanceValue:
+      type: string
+      enum:
+        - system
+        - dark
+        - light
+
+    UserSettingThemeValue:
+      type: string
+      enum:
+        - default
+        - apple
+        - google
+
+    UserSetting:
+      anyOf:
+        - $ref: "#/components/schemas/UserSettingSwipeAction"
+        - $ref: "#/components/schemas/UserSettingAppearance"
+        - $ref: "#/components/schemas/UserSettingTheme"
+
+    UserSettingType:
+      type: string
+      enum:
+        - swipe_actions
+        - web_appearance
+        - app_appearance
+        - web_theme
+        - app_theme
+
+    UpdateSettingsRequest:
+      type: object
+      required:
+        - name
+        - setting
+      properties:
+        name:
+          $ref: "#/components/schemas/UserSettingType"
+        setting:
+          $ref: "#/components/schemas/UserSetting"
+
+    FeatureFlagsResponse:
+      type: object
+      required:
+        - testFeatureFlag
+      properties:
+        testFeatureFlag:
+          $ref: "#/components/schemas/FeatureFlag"
+
+    EmailSettingsResponse:
+      type: object
+      required:
+        - show_in_all_mail
+        - inbox_view_app
+        - inbox_view_web
+        - notifications_app
+        - notifications_web
+        - show_important_marker_app
+        - show_important_marker_web
+        - inbox_customization
+      properties:
+        show_in_all_mail:
+          $ref: "#/components/schemas/EmailSettingBoolean"
+        inbox_view_app:
+          $ref: "#/components/schemas/EmailSettingInboxView"
+        inbox_view_web:
+          $ref: "#/components/schemas/EmailSettingInboxView"
+        notifications_app:
+          $ref: "#/components/schemas/EmailSettingNotifications"
+        notifications_web:
+          $ref: "#/components/schemas/EmailSettingNotifications"
+        split_inbox_app:
+          $ref: "#/components/schemas/EmailSettingSplitInbox"
+          x-go-type-skip-optional-pointer: true
+        split_inbox_web:
+          $ref: "#/components/schemas/EmailSettingSplitInbox"
+          x-go-type-skip-optional-pointer: true
+        show_important_marker_app:
+          $ref: "#/components/schemas/EmailSettingBoolean"
+        show_important_marker_web:
+          $ref: "#/components/schemas/EmailSettingBoolean"
+        signature:
+          $ref: "#/components/schemas/EmailSettingSignature"
+        inbox_customization:
+          $ref: "#/components/schemas/EmailInboxCustomization"
+
+    EmailSetting:
+      anyOf:
+        - $ref: "#/components/schemas/EmailSettingBoolean"
+        - $ref: "#/components/schemas/EmailSettingInboxView"
+        - $ref: "#/components/schemas/EmailSettingNotifications"
+        - $ref: "#/components/schemas/EmailSettingSplitInbox"
+        - $ref: "#/components/schemas/EmailSettingSignature"
+        - $ref: "#/components/schemas/EmailInboxCustomization"
+
+    EmailSettingType:
+      type: string
+      enum:
+        - show_in_all_mail
+        - inbox_view_app
+        - inbox_view_web
+        - notifications_app
+        - notifications_web
+        - split_inbox_app
+        - split_inbox_web
+        - show_important_marker_app
+        - show_important_marker_web
+        - signature
+        - inbox_customization
+
+    UpdateEmailSettingsRequest:
+      type: object
+      required:
+        - name
+        - setting
+      properties:
+        name:
+          $ref: "#/components/schemas/EmailSettingType"
+        setting:
+          $ref: "#/components/schemas/EmailSetting"
+
+    EmailSettingBoolean:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+
+    EmailSettingSignature:
+      type: object
+      required:
+        - enabled
+        - signature
+      properties:
+        enabled:
+          type: boolean
+        signature:
+          type: string
+
+    EmailInboxCustomization:
+      type: object
+      required:
+        - folders
+      properties:
+        folders:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailInboxCustomizationFolder"
+
+    EmailInboxCustomizationFolder:
+      type: object
+      required:
+        - label
+        - order
+        - enabled
+      properties:
+        label:
+          type: string
+        order:
+          type: integer
+        enabled:
+          type: boolean
+
+    EmailSettingInboxView:
+      type: object
+      required:
+        - view
+      properties:
+        view:
+          $ref: "#/components/schemas/InboxView"
+
+    EmailSettingNotifications:
+      type: object
+      required:
+        - setting
+      properties:
+        setting:
+          $ref: "#/components/schemas/AccountNotificationSetting"
+
+    EmailSettingSplitInbox:
+      type: object
+      required:
+        - categories
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailSettingSplitInboxCategory"
+
+    EmailSettingSplitInboxCategory:
+      type: string
+      enum:
+        - promotions
+        - updates
+        - social
+        - forums
+
+    InboxView:
+      type: string
+      enum:
+        - default
+        - important_first
+        - unread_first
+        - starred_first
+        - priority_inbox
+        - multiple_inboxes
+
+    AccountNotificationSetting:
+      type: string
+      enum:
+        - all_new_emails
+        - high_priority_only
+        - important_only
+        - primary_only
+        - none
+
+    FeatureFlag:
+      type: object
+      required:
+        - name
+        - enabled
+      properties:
+        name:
+          $ref: "#/components/schemas/FeatureFlagName"
+        enabled:
+          type: boolean
+
+    FeatureFlagName:
+      type: string
+      enum:
+        - outlook_enabled
+        - impact_center_v2
+        - email_cleaner_v2
+        - inbox_customization
+
+    HistoryType:
+      type: string
+      enum:
+        - messageAdded
+        - messageDeleted
+
+    EmailLabelColor:
+      type: object
+      required:
+        - textColor
+        - backgroundColor
+      properties:
+        textColor:
+          type: string
+        backgroundColor:
+          type: string
+
+    EmailLabelVisibility:
+      type: object
+      required:
+        - message
+        - label
+      properties:
+        message:
+          $ref: "#/components/schemas/EmailLabelVisibilityMessage"
+        label:
+          $ref: "#/components/schemas/EmailLabelVisibilityLabel"
+
+    EmailLabelType:
+      type: string
+      enum:
+        - system
+        - user
+
+    EmailLabelVisibilityLabel:
+      type: string
+      enum:
+        - show
+        - unread
+        - hide
+
+    EmailLabelVisibilityMessage:
+      type: string
+      enum:
+        - show
+        - hide
+
+    EmailMessageFormat:
+      type: string
+      enum:
+        - minimal
+        - inboxView
+        - full
+        - raw
+        - metadata
+        - flattened
+
+    ThreadFormat:
+      type: string
+      enum:
+        - full
+        - quickView
+
+    EmailHistoryType:
+      type: string
+      enum:
+        - messageAdded
+        - messageDeleted
+        - labelAdded
+        - labelRemoved
+
+    EmailLabelStats:
+      type: object
+      required:
+        - messagesTotal
+        - messagesUnread
+        - threadsTotal
+        - threadsUnread
+      properties:
+        messagesTotal:
+          type: integer
+        messagesUnread:
+          type: integer
+        threadsTotal:
+          type: integer
+        threadsUnread:
+          type: integer
+
+    EmailLabel:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/EmailLabelType"
+        color:
+          $ref: "#/components/schemas/EmailLabelColor"
+        visibility:
+          $ref: "#/components/schemas/EmailLabelVisibility"
+        stats:
+          $ref: "#/components/schemas/EmailLabelStats"
+
+    EmailThread:
+      type: object
+      required:
+        - id
+        - accountId
+        - historyId
+        - messages
+      properties:
+        id:
+          type: string
+        accountId:
+          type: string
+          format: uuid
+          readOnly: true
+        snippet:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        historyId:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessage"
+          x-go-type: "[]*EmailMessage"
+        calendarEvent:
+          $ref: "#/components/schemas/CalendarEvent"
+        labelIds:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+          items:
+            type: string
+
+    EmailDraftMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        accountId:
+          type: string
+          format: uuid
+          readOnly: true
+        message:
+          $ref: "#/components/schemas/EmailMessage"
+
+    EmailMessage:
+      type: object
+      required:
+        - id
+        - accountId
+      properties:
+        id:
+          type: string
+          readOnly: true
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        accountId:
+          type: string
+          format: uuid
+          readOnly: true
+        threadId:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        draftId:
+          type: string
+        labelIds:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+          items:
+            type: string
+        snippet:
+          type: string
+          readOnly: true
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        historyId:
+          type: string
+          readOnly: true
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        sizeEstimate:
+          type: integer
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        internalDate:
+          type: string
+          readOnly: true
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        raw:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        inboxMetadata:
+          $ref: "#/components/schemas/EmailInboxMetadata"
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        payload:
+          $ref: "#/components/schemas/EmailMessagePart"
+        thumbnails:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessageAttachmentThumbnail"
+        calendarEvent:
+          $ref: "#/components/schemas/CalendarEvent"
+        contactPhotoUrl:
+          type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        emailBodyHtml:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        emailBodyText:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    EmailInboxMetadata:
+      type: object
+      required:
+        - to
+        - parsedTo
+        - from
+        - parsedFrom
+        - cc
+        - parsedCc
+        - bcc
+        - parsedBcc
+        - subject
+        - inReplyTo
+        - replyTo
+        - parsedReplyTo
+        - date
+      properties:
+        to:
+          type: string
+        parsedTo:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParsedEmailAddress"
+        from:
+          type: string
+        parsedFrom:
+          $ref: "#/components/schemas/ParsedEmailAddress"
+        cc:
+          type: string
+        parsedCc:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParsedEmailAddress"
+        bcc:
+          type: string
+        parsedBcc:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParsedEmailAddress"
+        replyTo:
+          type: string
+        parsedReplyTo:
+          $ref: "#/components/schemas/ParsedEmailAddress"
+        subject:
+          type: string
+        inReplyTo:
+          type: string
+        date:
+          type: string
+          format: date-time
+        attachments:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/EmailInboxMetadataAttachment"
+
+    EmailInboxMetadataAttachment:
+      type: object
+      required:
+        - id
+        - filename
+        - contentType
+        - inline
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        contentType:
+          type: string
+        inline:
+          type: boolean
+
+    ParsedEmailAddress:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+
+    EmailMessageIDAndLabels:
+      type: object
+      required:
+        - messageId
+        - labelIds
+      properties:
+        messageId:
+          type: string
+        labelIds:
+          type: array
+          items:
+            type: string
+    EmailMessagePart:
+      type: object
+      required:
+        - partId
+        - mimeType
+        - headers
+        - body
+
+      properties:
+        partId:
+          type: string
+        mimeType:
+          type: string
+        filename:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        headers:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessagePartHeaders"
+        body:
+          $ref: "#/components/schemas/EmailMessagePartBody"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessagePart"
+          x-go-type: "[]*EmailMessagePart"
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    EmailMessagePartHeaders:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    EmailMessagePartBody:
+      type: object
+      required:
+        - size
+      properties:
+        size:
+          type: integer
+        data:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        attachmentId:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        attachmentUrl:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    EmailMessageUpdateRequest:
+      type: object
+      properties:
+        addLabelIds:
+          type: array
+          items:
+            type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        removeLabelIds:
+          type: array
+          items:
+            type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    EmailMessageBulkUpdateRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        addLabelIds:
+          type: array
+          items:
+            type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        removeLabelIds:
+          type: array
+          items:
+            type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    SubmitOfflineChangesRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/OfflineChangesRequest"
+
+    OfflineChangesRequest:
+      type: object
+      required:
+        - messageId
+        - labels
+        - timestamp
+      properties:
+        messageId:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    GetOfflineChangesStatusResponse:
+      type: object
+      required:
+        - status
+        - failedChanges
+      properties:
+        status:
+          type: string
+          enum:
+            - in_progress
+            - completed
+        failedChanges:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailedOfflineChange"
+
+    FailedOfflineChange:
+      type: object
+      required:
+        - messageId
+        - labels
+        - timestamp
+        - newLabels
+        - oldLabels
+      properties:
+        messageId:
+          type: string
+        oldLabels:
+          type: array
+          items:
+            type: string
+        newLabels:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    EmailMessageBulkIdRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+
+    EmailLabelListResponse:
+      type: object
+      required:
+        - labels
+      properties:
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailLabel"
+          x-go-type: "[]*EmailLabel"
+
+    EmailMessageListResponse:
+      type: object
+      required:
+        - messages
+        - nextPageToken
+        - resultSizeEstimate
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessage"
+          x-go-type: "[]*EmailMessage"
+        nextPageToken:
+          type: string
+        resultSizeEstimate:
+          type: number
+
+    EmailHistoryListResponse:
+      type: object
+      required:
+        - histories
+        - nextPageToken
+        - historyId
+      properties:
+        histories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailHistory"
+          x-go-type: "[]*EmailHistory"
+        nextPageToken:
+          type: string
+        historyId:
+          type: string
+
+    EmailHistory:
+      type: object
+      required:
+        - id
+        - messagesAdded
+        - messagesDeleted
+        - labelsAdded
+        - labelsRemoved
+        - labelsUpdated
+      properties:
+        id:
+          type: string
+        messagesAdded:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessage"
+          x-go-type: "[]*EmailMessage"
+        messagesDeleted:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessage"
+          x-go-type: "[]*EmailMessage"
+        labelsAdded:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessageIDAndLabels"
+          x-go-type: "[]*EmailMessageIDAndLabels"
+        labelsRemoved:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessageIDAndLabels"
+          x-go-type: "[]*EmailMessageIDAndLabels"
+        labelsUpdated:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessageIDAndLabels"
+          x-go-type: "[]*EmailMessageIDAndLabels"
+
+    EmailDraftMessageListResponse:
+      type: object
+      required:
+        - messages
+        - nextPageToken
+        - resultSizeEstimate
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailDraftMessage"
+          x-go-type: "[]*EmailDraftMessage"
+        nextPageToken:
+          type: string
+        resultSizeEstimate:
+          type: number
+
+    EmailThreadsListResponse:
+      type: object
+      required:
+        - messages
+        - nextPageToken
+        - resultSizeEstimate
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailThread"
+          x-go-type: "[]*EmailThread"
+        nextPageToken:
+          type: string
+        resultSizeEstimate:
+          type: number
+
+    EmailSearchThreadsListResponse:
+      type: object
+      required:
+        - contacts
+        - threads
+        - nextPageToken
+        - resultSizeEstimate
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContact"
+          x-go-type: "[]*EmailContact"
+        threads:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailThread"
+          x-go-type: "[]*EmailThread"
+        nextPageToken:
+          type: string
+        resultSizeEstimate:
+          type: number
+
+    EmailUploadType:
+      type: string
+      enum:
+        - multipart
+
+    PeopleSource:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+
+    PeopleMetadata:
+      type: object
+      required:
+        - primary
+        - source
+        - sourcePrimary
+      properties:
+        primary:
+          type: boolean
+        source:
+          type: object
+          $ref: "#/components/schemas/PeopleSource"
+        sourcePrimary:
+          type: boolean
+
+    EmailContactName:
+      type: object
+      required:
+        - displayName
+        - displayNameLastFirst
+        - familyName
+        - givenName
+        - metadata
+        - unstructuredName
+      properties:
+        displayName:
+          type: string
+        displayNameLastFirst:
+          type: string
+        familyName:
+          type: string
+        givenName:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/PeopleMetadata"
+        unstructuredName:
+          type: string
+
+    EmailContactEmailAddress:
+      type: object
+      required:
+        - value
+        - metadata
+      properties:
+        value:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/PeopleMetadata"
+
+    EmailContactPhoto:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+
+    EmailContact:
+      type: object
+      required:
+        - resourceName
+        - etag
+      properties:
+        resourceName:
+          type: string
+        etag:
+          type: string
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContactName"
+        emailAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContactEmailAddress"
+        photos:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContactPhoto"
+
+    EmailSearchResponse:
+      type: object
+      required:
+        - messages
+        - contacts
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailMessage"
+          x-go-type: "[]*EmailMessage"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContact"
+          x-go-type: "[]*EmailContact"
+
+    LabelSearchResponse:
+      type: object
+      required:
+        - labels
+      properties:
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailLabel"
+
+    EmailMessageAttachmentThumbnail:
+      type: object
+      required:
+        - originalFilename
+        - originalContentType
+        - thumbnail
+      properties:
+        attachmentId:
+          type: string
+        originalFilename:
+          type: string
+        originalContentType:
+          type: string
+        thumbnail:
+          type: string
+          format: byte
+
+    ContactSearchResponse:
+      type: object
+      required:
+        - contacts
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContact"
+          x-go-type: "[]*EmailContact"
+
+    ContactListResponse:
+      type: object
+      required:
+        - contacts
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailContact"
+          x-go-type: "[]*EmailContact"
+        nextPageToken:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        nextSyncToken:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        totalSize:
+          type: integer
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    EmailUnsubscribeOption:
+      type: string
+      enum:
+        - unsubscribe
+        - unsubscribe_mark_read
+        - unsubscribe_trash
+
+    CalendarEventPerson:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+        displayName:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    CalendarEventAttendee:
+      type: object
+      required:
+        - email
+        - responseStatus
+      properties:
+        email:
+          type: string
+        displayName:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        responseStatus:
+          $ref: "#/components/schemas/CalendarEventResponseStatus"
+        self:
+          type: boolean
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+
+    CalendarEventResponseStatus:
+      type: string
+      enum:
+        - needsAction
+        - declined
+        - tentative
+        - accepted
+
+    CalendarEventStatus:
+      type: string
+      enum:
+        - confirmed
+        - tentative
+        - cancelled
+
+    CalendarEvent:
+      type: object
+      required:
+        - id
+        - uid
+        - status
+        - created
+        - summary
+        - organizer
+        - attendees
+      properties:
+        id:
+          type: string
+        uid:
+          type: string
+        calendarId:
+          type: string
+        status:
+          $ref: "#/components/schemas/CalendarEventStatus"
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        summary:
+          type: string
+        description:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        conferenceLink:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        start:
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        end:
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-omitempty: true
+        organizer:
+          $ref: "#/components/schemas/CalendarEventPerson"
+        attendees:
+          type: array
+          items:
+            $ref: "#/components/schemas/CalendarEventAttendee"
+
+    CalendarEventListResponse:
+      type: object
+      required:
+        - events
+        - nextPageToken
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/CalendarEvent"
+        nextPageToken:
+          type: string
+
+    PreAuthAbGroupsResponse:
+      type: object
+      required:
+        - preAuthAbGroups
+      properties:
+        preAuthAbGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/PreAuthGroupName"
+
+    PreAuthGroupName:
+      type: string
+      enum:
+        - google_permission_prompt

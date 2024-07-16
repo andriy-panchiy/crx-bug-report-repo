@@ -1,0 +1,65 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1
+  title: Wildmail Auth
+
+servers:
+  - url: https://mail.wildhero.com/
+    description: Production server 
+  - url: https://mail.treecard.online/
+    description: Dev server
+    
+paths:
+  /api/extension-auth/token:
+    get:
+      summary: refresh ID token
+      operationId: refreshIdToken
+      tags:
+        - auth
+      parameters:
+        - name: refresh_token
+          in: query
+          description: google oAuth refresh token
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successfully refreshed token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefreshResponse"
+        "401":
+          description: unauthorized
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+components:
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+        cause:
+          type: string
+      
+
+    TokenRefreshResponse:
+      type: object
+      required:
+        - id_token
+        - expired_in
+      properties:
+        id_token:
+          type: string
+        expires_in:
+          type: string
